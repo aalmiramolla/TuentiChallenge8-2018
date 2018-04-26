@@ -54,7 +54,6 @@
                   r.write('Case #{}: {}\n'.format(idx+1,value))
 #+END_SRC
 
-#+RESULTS:
 * Challenge 3 - Scales
 
 Hay que imprimir todas las escalas por las cuales las notas de entrada
