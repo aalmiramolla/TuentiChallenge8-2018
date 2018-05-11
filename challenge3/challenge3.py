@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 # coding: utf-8
 possible_keys='MA MA# MB MC MC# MD MD# ME MF MF# MG MG# mA mA# mB mC mC# mD mD# mE mF mF# mG mG#'.split()
-piano='C;C#;D;D#;E;E#|F;F#;G;G#;A;A#;B;B#|C'.split(';')
-
-def parse_note_2(note):
-    # Ugly
-    for p_note in piano:
-        if note in p_note:
-            return p_note
+piano='C;C#;D;D#;E;F;F#;G;G#;A;A#;B;C'.split(';')
+translate_notes = {
+    'E#': 'F',
+    'B#': 'C',
+    'Cb': 'B',
+    'Db': 'C#',
+    'Eb': 'D#',
+    'Fb': 'E',
+    'Gb': 'F#',
+    'Ab': 'G#',
+    'Bb': 'A#'
+    }
 
 def parse_note(note):
-    if 'b' in note:
-        note_wo_b = parse_note_2(note[0])
-        index = piano.index(note_wo_b)-1
-        return piano[piano.index(note_wo_b)-1]
-    return parse_note_2(note)
+    if note in translate_notes.keys():
+        return translate_notes.get(note)
+    return note
 
 def get_scale(note, major_or_minor):
     note_parsed = parse_note(note)
@@ -30,26 +33,36 @@ def which_note_reach(note, whole_or_half):
     return piano[index]
 
 def get_all_keys(song):
-    solution = list(filter(lambda key: song.issubset(get_scale(key[1:], key[0])), possible_keys))
-    if not solution:
-        return 'None'
-    else:    
-        return ' '.join(solution)
+    solution = list(filter(lambda key: 
+                           song.issubset(get_scale(key[1:], key[0])),
+                           possible_keys))
+    return 'None' if not solution else ' '.join(solution)
+
+
+def is_number_of_notes_or_notes(line):
+    try:
+        return int(line)
+    except ValueError:
+        return None
+    return None
 
 if __name__=='__main__':
-    test_or_submit = 'test'
+    test_or_submit = 'submit'
     with open(test_or_submit+'Input') as f:
         with open(test_or_submit+'Output', 'w') as r:
             lines = f.readlines()[1:]
-            line_notes = []
-            for idx, line in enumerate(lines):
-                try:
-                    cases= int(line)
-                    if cases == 0:
-                        value = ' '.join(possible_keys)
-                        r.write('Case #{}: {}\n'.format(idx,value))
-                except ValueError:
+            counter = 1
+            for line in lines:
+                line_notes = []
+                n_notes = is_number_of_notes_or_notes(line)
+                if n_notes == 0:
+                    value = ' '.join(possible_keys)
+                    r.write('Case #{}: {}\n'.format(counter,value))
+                    counter += 1
+                elif not n_notes:
                     for note in line.split():
                         line_notes.append(parse_note(note))
-                    value = get_all_keys(set(line_notes))
-                    r.write('Case #{}: {}\n'.format(idx,value))
+                    line_notes = set(line_notes)
+                    value = get_all_keys(line_notes)
+                    r.write('Case #{}: {}\n'.format(counter,value))
+                    counter += 1
